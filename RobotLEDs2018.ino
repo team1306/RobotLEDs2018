@@ -14,49 +14,119 @@ CRGB leds[NUM_LEDS];
 // with FastLED.
 
 void setup() {
-  delay(3000);
-  Serial.begin(9600);
-  Serial.println("2018 Robot LEDs starting");
+  #ifdef DEBUG
+    Serial.begin(9600);
+    Serial.println("2018 Robot LEDs starting");
+  #endif
   FastLED.addLeds<LED_TYPE, LED_PIN>(leds, NUM_LEDS);
   FastLED.setBrightness(BRIGHTNESS);
 }
 
 
 void loop() {
-//  randomSeed(millis());
-//   
-//  int wait=random(10,30);
-//  int dim=random(4,6);
-//  int max_cycles=8;
-//  int cycles=random(1,max_cycles+1);
-//   
-//  rainbowCycle(wait, cycles, dim);
-
-  
+//  rainbowSingle(35);
+//  rainbowDouble(35);
 //  nightRider(CRGB(255, 0, 0), CRGB(255, 255, 255), 3, 50);
-//  rainbow(35);
-//  police(1000);
+//  nightRiderSides(CRGB(255, 0, 0), CRGB(0, 0, 0), 3, 1000);
+  nightRiderSidesOneWay(CRGB(255, 0, 0), CRGB(0, 0, 0), 3, random(20, 70));
 }
 
-void police(int wait) {
-  fill_solid( &(leds[0]), NUM_LEDS/2, CRGB( 255, 0, 0) );
-  fill_solid( &(leds[NUM_LEDS/2 + 1]), NUM_LEDS, CRGB( 0, 0, 255) );
+void setAll(CRGB c) {
+  for (int i = 0; i < NUM_LEDS; i++) {
+    leds[i] = c;
+  }
   FastLED.show();
-  Serial.println("Wait");
-  delay(wait);
-  Serial.println("End Wait");
-  fill_solid( &(leds[0]), NUM_LEDS/2, CRGB( 0, 0, 255) );
-  fill_solid( &(leds[NUM_LEDS/2 + 1]), NUM_LEDS, CRGB( 255, 0, 0) );
-  FastLED.show();
-  delay(wait);
 }
 
-void rainbow(uint8_t wait) {
+void nightRiderSidesOneWay(CRGB c, CRGB c2, int len, int delayTime) {
+  int i=0;
+  for (int i=0; i < NUM_LEDS/2; i++) {  // Forward
+    leds[i] = c;
+    leds[(NUM_LEDS/2) + i] = c;
+    if (i - len >= 0) {
+      leds[i - len] = c2;
+      leds[((NUM_LEDS/2) + i) - len] = c2;
+    }
+    FastLED.show();
+    delay(delayTime);
+  }
+  for (int i = len; i >= 0; i--) {
+    leds[NUM_LEDS - i] = c2;
+    leds[(NUM_LEDS/2) - i] = c2;
+    FastLED.show();
+    delay(delayTime);
+  }
+}
+void nightRiderSides(CRGB c, CRGB c2, int len, int delayTime) {
+//  int i=0;
+//  for (int i=0; i < NUM_LEDS/2; i++) {  // Forward
+//    leds[i] = c;
+//    leds[(NUM_LEDS/2) + i] = c;
+//    if (i - len >= 0) {
+//      leds[i - len] = c2;
+//      leds[((NUM_LEDS/2) + i) - len] = c2;
+//    }
+//    FastLED.show();
+//    delay(delayTime);
+//  }
+//  for (int i = len; i >= 0; i--) {
+//    leds[NUM_LEDS - i] = c2;
+//    leds[(NUM_LEDS/2) - i] = c2;
+//    FastLED.show();
+//    delay(delayTime);
+//  }
+
+  int i=0;
+  for (int i=(NUM_LEDS/2); i > 0; i--) {  // Forward
+    leds[i] = c;
+    leds[(NUM_LEDS/2) + i] = c;
+    if (i - len >= 0) {
+      leds[i - len] = c2;
+      leds[((NUM_LEDS/2) + i) - len] = c2;
+    }
+    FastLED.show();
+    delay(delayTime);
+  }
+  for (int i = 0; i < len; i++) {
+    leds[NUM_LEDS - i] = c2;
+    leds[(NUM_LEDS/2) - i] = c2;
+    FastLED.show();
+    delay(delayTime);
+  }
+  
+//  for (int i=0; i < NUM_LEDS/2; i++) {  // Backward
+//    leds[NUM_LEDS - i] = c;
+//    leds[(NUM_LEDS/2) - i] = c;
+//    if ((NUM_LEDS-i) <= NUM_LEDS-len) {
+//      leds[(NUM_LEDS-i) + len] = c2;
+//      leds[((NUM_LEDS/2)-i) + len] = c2;
+//    }
+//    FastLED.show();
+//    delay(delayTime);
+//  }
+}
+
+void rainbowSingle(uint8_t wait) {
   uint16_t i, j;
 
   for(j=0; j<256; j++) {
     for(i=0; i<NUM_LEDS; i++) {
       leds[i] = Wheel((i+j) & 255);
+    }
+    FastLED.show();
+    delay(wait);
+  }
+}
+
+void rainbowDouble(uint8_t wait) {
+  uint16_t i, j;
+
+  for(j=0; j<256; j++) {
+    for(i=0; i<NUM_LEDS/2; i++) {
+      leds[i] = Wheel((i+j) & 255);
+    }
+    for(i=(NUM_LEDS/2); i<NUM_LEDS; i++) {
+      leds[i] = Wheel((i+j - (NUM_LEDS/2)) & 255);
     }
     FastLED.show();
     delay(wait);
@@ -94,36 +164,6 @@ void nightRider(CRGB c, CRGB c2, int len, int delayTime) {
     FastLED.show();
     delay(delayTime);
   }
-}
-
-void rainbowCycle(int wait, int cycles, int dim) {
-
-  //loop several times with same configurations and same delay
-  for(int cycle=0; cycle < cycles; cycle++){
-  
-    byte dir=random(0,2);
-    int k=255;
-    
-    //loop through all colors in the wheel
-    for (int j=0; j < 256; j++,k--) { 
-      
-      if(k<0) {
-        k=255;
-      }
-      
-      //Set RGB color of each LED
-      for(int i=0; i<NUM_LEDS; i++) {
-        
-        CRGB ledColor = wheel(((i * 256 / NUM_LEDS) + (dir==0?j:k)) % 256,dim);        
-        leds[i]=ledColor;
-        
-      }
-      
-      FastLED.show();
-      FastLED.delay(wait);
-    }
-  }
-  
 }
 
 CRGB wheel(int WheelPos, int dim) {
