@@ -1,7 +1,7 @@
 #include <FastLED.h>
 
 #define LED_PIN     6
-#define NUM_LEDS    46
+#define NUM_LEDS    142
 #define BRIGHTNESS  64
 #define LED_TYPE    NEOPIXEL
 
@@ -24,11 +24,11 @@ void setup() {
 
 
 void loop() {
-//  rainbowSingle(35);
+  rainbowSingle(35);
 //  rainbowDouble(35);
 //  nightRider(CRGB(255, 0, 0), CRGB(255, 255, 255), 3, 50);
 //  nightRiderSides(CRGB(255, 0, 0), CRGB(0, 0, 0), 3, 1000);
-  nightRiderSidesOneWay(CRGB(255, 0, 0), CRGB(0, 0, 0), 3, random(20, 70));
+//  nightRiderSidesOneWayOpp(CRGB(255, 0, 0), CRGB(0, 0, 0), 3, random(20, 70));
 }
 
 void setAll(CRGB c) {
@@ -39,6 +39,25 @@ void setAll(CRGB c) {
 }
 
 void nightRiderSidesOneWay(CRGB c, CRGB c2, int len, int delayTime) {
+  int i=0;
+  for (int i=0; i < NUM_LEDS/2; i++) {  // Forward
+    leds[i] = c;
+    leds[(NUM_LEDS/2) + i] = c;
+    if (i - len >= 0) {
+      leds[i - len] = c2;
+      leds[((NUM_LEDS/2) + i) - len] = c2;
+    }
+    FastLED.show();
+    delay(delayTime);
+  }
+  for (int i = len; i >= 0; i--) {
+    leds[NUM_LEDS - i] = c2;
+    leds[(NUM_LEDS/2) - i] = c2;
+    FastLED.show();
+    delay(delayTime);
+  }
+}
+void nightRiderSidesOneWayOpp(CRGB c, CRGB c2, int len, int delayTime) {
   int i=0;
   for (int i=0; i < NUM_LEDS/2; i++) {  // Forward
     leds[i] = c;
