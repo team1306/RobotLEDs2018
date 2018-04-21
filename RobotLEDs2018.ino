@@ -2,7 +2,7 @@
 
 #define LED_PIN     6
 #define NUM_LEDS    142
-#define BRIGHTNESS  64
+#define BRIGHTNESS  255
 #define LED_TYPE    NEOPIXEL
 
 const int TYPE_SWITCH_PIN = 12;
@@ -32,15 +32,15 @@ void setup() {
 void loop() {
   if (digitalRead(TYPE_SWITCH_PIN)) {
 //    rainbowSingle(35);
-    rainbowDouble(35);
+    rainbowDouble(30);
   } else {
     setAll(CRGB(0,0,0));
     if (digitalRead(ALLIANCE_PIN)) {
       // Blue
-      nightRiderSides(CRGB(0, 0, 255), CRGB(0,0,0), 3, 10, 0);
+      nightRiderSides(CRGB(0, 0, 255), CRGB(0,0,0), 5, 10, 0);
     } else {
       // Red
-      nightRiderSides(CRGB(255, 0, 0), CRGB(0,0,0), 3, 10, 0);
+      nightRiderSides(CRGB(255, 0, 0), CRGB(0,0,0), 5, 10, 0);
     }
 //    nightRider(CRGB(255, 0, 0), CRGB(0, 0, 0), 3, 50);
   }
